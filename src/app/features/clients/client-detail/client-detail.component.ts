@@ -31,14 +31,29 @@ export class ClientDetailComponent implements OnInit {
   }
 
   loadClient(id: number): void {
-    this.clientService.getClientById(id).subscribe((client) => {
-      this.client = client;
+    this.clientService.getClientById(id).subscribe({
+      next: (client) => {
+        this.client = client;
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement du client:', err);
+        // Rediriger vers la liste des clients si le client n'est pas trouvé
+        if (err.status === 404) {
+          this.router.navigate(['/clients']);
+        }
+      },
     });
   }
 
   loadClientCredits(clientId: number): void {
-    this.creditService.getCreditsByClientId(clientId).subscribe((credits) => {
-      this.credits = credits;
+    this.creditService.getCreditsByClientId(clientId).subscribe({
+      next: (credits) => {
+        this.credits = credits;
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des crédits:', err);
+        this.credits = []; // Initialiser avec un tableau vide en cas d'erreur
+      },
     });
   }
 
